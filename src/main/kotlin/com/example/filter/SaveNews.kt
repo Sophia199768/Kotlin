@@ -12,9 +12,9 @@ fun saveNews(path: String, news: Collection<News>) {
     }
 
     File(path).bufferedWriter().use { writer ->
-        writer.write("id,title,place,description,siteUrl,favoritesCount,commentsCount,rating\n")
+        writer.write("id,publicationDate,title,place,description,siteUrl,favoritesCount,commentsCount\n")
         news.forEach {
-            writer.write("${it.id},${it.title},${it.place},${it.description},${it.siteUrl},${it.favoritesCount},${it.commentsCount},${it.rating}\n")
+            writer.write("${it.id},${it.publicationDate},${it.title},${it.place},${it.description},${it.siteUrl},${it.favoritesCount},${it.commentsCount}\n")
         }
     }
 }

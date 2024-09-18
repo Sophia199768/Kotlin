@@ -1,62 +1,98 @@
 package com.example.prettyPrint
 
 class PrettyPrint {
-    @DslMarker
-    annotation class PrettyPrintDsl
+    private val content = StringBuilder()
 
-    @PrettyPrintDsl
-    class ReadmeBuilder {
-        private val content = StringBuilder()
-
-        fun header(level: Int, block: () -> String) {
-            content.append("#".repeat(level)).append(" ").append(block()).append("\n\n")
-        }
-
-        fun text(block: () -> String) {
-            content.append(block()).append("\n\n")
-        }
-
-        fun code(language: String, block: () -> String) {
-            content.append("```").append(language).append("\n")
-            content.append(block()).append("\n")
-            content.append("```\n\n")
-        }
-
-        fun build(): String = content.toString()
+    fun header(level: Int, init: Header.() -> Unit) {
+        val header = Header(level).apply(init)
+        content.append(header.toString()).append("\n")
     }
 
-    fun readme(block: ReadmeBuilder.() -> Unit): String {
-        val builder = ReadmeBuilder()
-        builder.block()
-        return builder.build()
+    fun text(init: Text.() -> Unit) {
+        val text = Text().apply(init)
+        content.append(text.toString()).append("\n")
     }
 
-    fun bold(text: String) = "**$text**"
-    fun underlined(text: String) = "**$text**"
-    fun link(link: String, text: String) = "[$text]($link)"
+    override fun toString(): String = content.toString()
+}
+
+class Header(private val level: Int) {
+    private val content = StringBuilder()
+
+    operator fun String.unaryPlus() {
+        content.append(this)
+    }
+
+    override fun toString(): String {
+        return "#".repeat(level) + " " + content.toString()
+    }
+}
+
+class Text {
+    private val content = StringBuilder()
+
+    operator fun String.unaryPlus() {
+        content.append(this)
+    }
+
+    fun bold(text: String) {
+        content.append("**").append(text).append("**")
+    }
+
+    fun underlined(text: String) {
+        content.append("__").append(text).append("__")
+    }
+
+    fun code(language: ProgrammingLanguage, init: Code.() -> Unit) {
+        val code = Code(language).apply(init)
+        content.append(code.toString())
+    }
+
+    fun link(link: String, text: String) {
+        content.append("[$text]($link)")
+    }
+
+    override fun toString(): String = content.toString()
+}
+
+class Code(private val language: ProgrammingLanguage) {
+    private val content = StringBuilder()
+
+    operator fun String.unaryPlus() {
+        content.append(this)
+    }
+
+    override fun toString(): String {
+        return "```${language.name}\n${content.toString()}\n```"
+    }
+}
+
+enum class ProgrammingLanguage {
+    KOTLIN, JAVA, PYTHON
+}
+
+fun prettyPrint(init: PrettyPrint.() -> Unit): PrettyPrint {
+    return PrettyPrint().apply(init)
 }
 
 
 fun main() {
-    val prettyPrint = PrettyPrint()
-
-    val result = prettyPrint.readme {
-        header(level = 1) { "Kotlin Lecture" }
-        header(level = 2) { "DSL" }
+    val pretty = prettyPrint {
+        header(level = 1) { +"Kotlin Lecture" }
+        header(level = 2) { +"DSL" }
 
         text {
-            "Today we will try to recreate ${prettyPrint.bold("DSL")} from this article: ${prettyPrint.link(link = "https://kotlinlang.org/docs/type-safe-builders.html", text = "Kotlin Docs")}!!!" +
-                    " It is so ${prettyPrint.underlined("fascinating and interesting")}!"
-        }
-
-        code(language = "kotlin") {
-            """
-                fun main() {
-                    println("Hello world!")
-                }
-            """.trimIndent()
+            +("Today we will try to recreate ${bold("DSL")} from this article: ${link(link = "https://kotlinlang.org/docs/type-safe-builders.html", text = "Kotlin Docs")}!!!")
+            +("It is so ${underlined("fascinating and interesting")}!")
+            code(language = ProgrammingLanguage.KOTLIN) {
+                +"""
+                    fun main() {
+                        println("Hello world!")
+                    }
+                """.trimIndent()
+            }
         }
     }
 
-    println(result)
+    println(pretty)
 }
