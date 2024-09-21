@@ -11,7 +11,7 @@ import java.time.LocalDate
 fun Application.configureRouting() {
     routing {
         get("/") {
-            saveNews("test.txt", getNews())
+            saveNews("test.csv", getNews())
         }
 
         get("/news") {

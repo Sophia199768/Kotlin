@@ -30,6 +30,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0-rc-1")
     implementation("io.ktor:ktor-client-content-negotiation:3.0.0-rc-1")
     implementation ("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+    implementation ("com.jsoizo:kotlin-csv-jvm:1.10.0")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
