@@ -5,6 +5,7 @@ import getMostRatedNews
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import processNews
 import saveNews
 import java.time.LocalDate
 
@@ -16,6 +17,7 @@ fun Application.configureRouting() {
 
         get("/news") {
             val news = getNews()
+            processNews(4)
             call.respondText(news.toString())
         }
 
